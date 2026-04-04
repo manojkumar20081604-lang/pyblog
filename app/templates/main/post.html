@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+{% block meta %}
+<meta name="description" content="{{ post.excerpt }}">
+<meta property="og:title" content="{{ post.title }}">
+<meta property="og:description" content="{{ post.excerpt }}">
+<meta property="og:type" content="article">
+{% endblock %}
+
+{% block content %}
+<article class="card">
+    {% if post.image_file %}
+    <img src="{{ url_for('main.uploaded_file', filename=post.image_file) }}" class="card-img-top" alt="{{ post.title }}">
+    {% endif %}
+    <div class="card-body">
+        <h1 class="card-title">{{ post.title }}</h1>
+        {% if not post.is_published %}
+            <span class="badge bg-secondary mb-2">Draft</span>
+        {% endif %}
+        <p class="text-muted">
+            By <a href="{{ url_for('main.user_profile', username=post.author.username) }}" class="text-decoration-none">{{ post.author.username }}</a>
+            | {{ post.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+            | <i class="bi bi-eye"></i> {{ post.views }} views
+        </p>
+        <div class="mb-3">
+            {% for tag in post.tags %}
+                <a href="{{ url_for('main.index', tag=tag.name) }}" class="badge bg-info text-dark">{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+        <hr>
+        <div class="post-content my-4" style="white-space: pre-wrap;">{{ post.content }}</div>
+
+        <div class="d-flex align-items-center border-top border-bottom py-3 mb-4">
+            {% if current_user.is_authenticated %}
+                <form action="{{ url_for('main.like_post', post_id=post.id) }}" method="POST" class="me-2">
+                    {% if user_has_liked %}
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-heart-fill"></i> Unlike ({{ post.like_count }})</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-outline-danger"><i class="bi bi-heart"></i> Like ({{ post.like_count }})</button>
+                    {% endif %}
+                </form>
+            {% else %}
+                <span class="text-muted"><i class="bi bi-heart"></i> {{ post.like_count }} likes</span>
+            {% endif %}
+
+            {% if current_user.is_authenticated and (post.user_id == current_user.id or current_user.is_admin) %}
+                <a href="{{ url_for('main.edit_post', post_id=post.id) }}" class="btn btn-secondary ms-2"><i class="bi bi-pencil"></i> Edit</a>
+                <form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="POST" class="ms-2" onsubmit="return confirm('Delete this post?');">
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="author-box d-flex align-items-start mb-4 p-3 bg-light rounded">
+            <img src="{{ post.author.profile_pic or 'https://via.placeholder.com/64' }}" class="rounded-circle me-3" style="width: 64px; height: 64px; object-fit: cover;" alt="{{ post.author.username }}">
+            <div>
+                <h5 class="mb-1">{{ post.author.username }}</h5>
+                <p class="text-muted mb-0">{{ post.author.bio or 'No bio available.' }}</p>
+            </div>
+        </div>
+    </div>
+</article>
+
+<section class="mt-5">
+    <h3><i class="bi bi-chat"></i> Comments ({{ comments_pagination.total }})</h3>
+    
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('main.add_comment', post_id=post.id) }}" method="POST" class="mb-4">
+        <div class="mb-3">
+            <textarea class="form-control" name="content" rows="3" placeholder="Write a comment..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
+    {% else %}
+    <p><a href="{{ url_for('auth.login') }}">Login</a> to leave a comment.</p>
+    {% endif %}
+
+    {% for comment in comments_pagination.items %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong>{{ comment.author.username }}</strong>
+                    <small class="text-muted ms-2">{{ comment.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                </div>
+                {% if current_user.is_authenticated and (comment.user_id == current_user.id or current_user.is_admin) %}
+                <form action="{{ url_for('main.delete_comment', comment_id=comment.id) }}" method="POST" onsubmit="return confirm('Delete comment?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+                {% endif %}
+            </div>
+            <p class="mb-0 mt-2">{{ comment.content }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if comments_pagination.pages > 1 %}
+    <nav aria-label="Comment pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not comments_pagination.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('main.view_post', post_id=post.id, comment_page=comments_pagination.prev_num) }}">Previous</a>
+            </li>
+            {% for page_num in comments_pagination.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == comments_pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('main.view_post', post_id=post.id, comment_page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item {% if not comments_pagination.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('main.view_post', post_id=post.id, comment_page=comments_pagination.next_num) }}">Next</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

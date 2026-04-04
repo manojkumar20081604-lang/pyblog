@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-gear"></i> Admin Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <h2>{{ stats.total_users }}</h2>
+                <p>Total Users</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h2>{{ stats.total_posts }}</h2>
+                <p>Total Posts</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h2>{{ stats.published_posts }}</h2>
+                <p>Published</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-warning text-dark">
+            <div class="card-body">
+                <h2>{{ stats.draft_posts }}</h2>
+                <p>Drafts</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Recent Users</h4>
+                <a href="{{ url_for('admin.users') }}" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for user in recent_users %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <strong>{{ user.username }}</strong>
+                        <small class="text-muted">({{ user.role }})</small>
+                    </span>
+                    {% if not user.is_active %}<span class="badge bg-danger">Inactive</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Recent Posts</h4>
+                <a href="{{ url_for('admin.posts') }}" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for post in recent_posts %}
+                <li class="list-group-item">
+                    <strong>{{ post.title }}</strong>
+                    <br><small class="text-muted">by {{ post.author.username }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

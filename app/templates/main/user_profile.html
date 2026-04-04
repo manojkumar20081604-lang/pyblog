@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <img src="{{ user.profile_pic or 'https://via.placeholder.com/150' }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="{{ user.username }}">
+                <h3>{{ user.username }}</h3>
+                <p class="text-muted">{{ user.bio or 'No bio yet' }}</p>
+                <p><small>Member since {{ user.created_at.strftime('%B %Y') }}</small></p>
+                
+                <div class="d-flex justify-content-center gap-3 mb-3">
+                    <div class="text-center">
+                        <strong>{{ user.followers.count() }}</strong><br>
+                        <small class="text-muted">Followers</small>
+                    </div>
+                    <div class="text-center">
+                        <strong>{{ user.followed.count() }}</strong><br>
+                        <small class="text-muted">Following</small>
+                    </div>
+                    <div class="text-center">
+                        <strong>{{ posts|length }}</strong><br>
+                        <small class="text-muted">Posts</small>
+                    </div>
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                    {% if user.id != current_user.id %}
+                        {% if current_user.is_following(user) %}
+                            <form action="{{ url_for('main.unfollow_user', username=user.username) }}" method="POST">
+                                <button type="submit" class="btn btn-danger">Unfollow</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('main.follow_user', username=user.username) }}" method="POST">
+                                <button type="submit" class="btn btn-primary">Follow</button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('auth.profile') }}" class="btn btn-outline-primary">Edit Profile</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <h3 class="mb-4">Posts by {{ user.username }}</h3>
+        {% for post in posts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{{ url_for('main.view_post', post_id=post.id) }}" class="text-decoration-none">{{ post.title }}</a>
+                </h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ post.created_at.strftime('%B %d, %Y') }}</h6>
+                <p class="card-text">{{ post.excerpt }}</p>
+                <a href="{{ url_for('main.view_post', post_id=post.id) }}" class="btn btn-sm btn-primary">Read More</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">No posts yet.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

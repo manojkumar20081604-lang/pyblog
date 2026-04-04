@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <img src="{{ current_user.profile_pic or 'https://via.placeholder.com/150' }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="{{ current_user.username }}">
+                <h4>{{ current_user.username }}</h4>
+                <p class="text-muted">{{ current_user.email }}</p>
+                <p><small>Member since {{ current_user.created_at.strftime('%B %Y') }}</small></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Edit Profile</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.profile_pic.label(class="form-label") }}
+                        {{ form.profile_pic(class="form-control", placeholder="Enter profile picture URL") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.bio.label(class="form-label") }}
+                        {{ form.bio(class="form-control", rows=4, placeholder="Tell us about yourself...") }}
+                    </div>
+                    {{ form.submit(class="btn btn-primary") }}
+                </form>
+                
+                <hr class="my-4">
+                
+                <h5 class="text-danger">Danger Zone</h5>
+                <p>Once you delete your account, there is no going back.</p>
+                <form action="{{ url_for('auth.delete_account') }}" method="POST" onsubmit="return confirm('Are you sure? This action cannot be undone.');">
+                    <button type="submit" class="btn btn-danger">Delete Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}My Drafts{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Drafts</h1>
+
+{% for post in posts %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{{ post.title }}</h5>
+        <p class="card-text text-muted">Last updated: {{ post.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        <a href="{{ url_for('main.edit_post', post_id=post.id) }}" class="btn btn-primary">Edit Draft</a>
+        <form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this draft?');">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    You have no drafts. <a href="{{ url_for('main.create_post') }}">Create a new post</a>
+</div>
+{% endfor %}
+{% endblock %}
