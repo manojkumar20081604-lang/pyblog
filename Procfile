@@ -1,0 +1,1 @@
+web: gunicorn blog_app:app --workers 2 --timeout 120

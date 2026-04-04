@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyBlog Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .status-ok { color: #198754; }
+        .status-error { color: #dc3545; }
+        .status-checking { color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="text-center mb-4">
+                    <h1>PyBlog System Status</h1>
+                    <p class="lead">Live status of our services.</p>
+                </div>
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Main Application (API)</strong>
+                                <div class="small text-muted">Checks the core web service.</div>
+                            </div>
+                            <span id="app-status" class="fw-bold status-checking">Checking...</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Database</strong>
+                                <div class="small text-muted">Checks the database connection.</div>
+                            </div>
+                            <span id="db-status" class="fw-bold status-checking">Checking...</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="text-center mt-3">
+                    <small class="text-muted">Last checked: <span id="last-checked"></span></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // Replace with your actual production health check URL
+        const HEALTH_CHECK_URL = 'https://your-app-name.onrender.com/healthz';
+        // ---------------------
+
+        const appStatusEl = document.getElementById('app-status');
+        const dbStatusEl = document.getElementById('db-status');
+        const lastCheckedEl = document.getElementById('last-checked');
+
+        function updateStatus(element, status, message) {
+            element.textContent = message;
+            element.className = 'fw-bold'; // Reset classes
+            element.classList.add(status === 'ok' ? 'status-ok' : 'status-error');
+        }
+
+        async function checkStatus() {
+            lastCheckedEl.textContent = new Date().toLocaleTimeString();
+
+            updateStatus(appStatusEl, 'checking', 'Checking...');
+            updateStatus(dbStatusEl, 'checking', 'Checking...');
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
+
+                const response = await fetch(HEALTH_CHECK_URL, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                updateStatus(appStatusEl, 'ok', 'Operational');
+
+                const data = await response.json();
+                updateStatus(dbStatusEl, data.database, data.database === 'ok' ? 'Operational' : 'Error');
+
+            } catch (error) {
+                console.error('Health check failed:', error);
+                updateStatus(appStatusEl, 'error', 'Major Outage');
+                updateStatus(dbStatusEl, 'error', 'Undetermined');
+            }
+        }
+
+        checkStatus();
+        setInterval(checkStatus, 60000); // Check every 60 seconds
+    </script>
+</body>
+</html>
