@@ -58,8 +58,8 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    CACHE_TYPE = 'redis'
-    RATELIMIT_ENABLED = True
+    CACHE_TYPE = 'simple'
+    RATELIMIT_ENABLED = False
 
 
 class TestingConfig(Config):
