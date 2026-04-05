@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-from app.extensions import db
-from app.models import User, UserRole, Notification
-from app.utils.forms import RegisterForm, LoginForm, PasswordResetRequestForm, PasswordResetForm, ProfileForm
-from app.utils.email import send_welcome_email, send_password_reset_email
-from app.utils.decorators import admin_required, rate_limit
+from blog.extensions import db
+from blog.models import User, UserRole, Notification
+from blog.utils.forms import RegisterForm, LoginForm, PasswordResetRequestForm, PasswordResetForm, ProfileForm
+from blog.utils.email import send_welcome_email, send_password_reset_email
+from blog.utils.decorators import admin_required, rate_limit
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 

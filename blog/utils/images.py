@@ -25,7 +25,7 @@ def save_image(file, folder='uploads', filename=None):
             ext = fname.rsplit('.', 1)[1].lower() if '.' in fname else 'jpg'
             filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{fname[:20]}.{ext}"
         
-        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        filepath = os.path.join(current_blog.config['UPLOAD_FOLDER'], filename)
         
         img = Image.open(file)
         
@@ -36,10 +36,10 @@ def save_image(file, folder='uploads', filename=None):
         elif img.mode != 'RGB':
             img = img.convert('RGB')
         
-        max_size = current_app.config.get('IMAGE_SIZE', (1920, 1080))
+        max_size = current_blog.config.get('IMAGE_SIZE', (1920, 1080))
         img.thumbnail(max_size, Image.Resampling.LANCZOS)
         
-        quality = current_app.config.get('IMAGE_QUALITY', 85)
+        quality = current_blog.config.get('IMAGE_QUALITY', 85)
         img.save(filepath, 'JPEG', quality=quality, optimize=True)
         
         logger.info(f'Image saved: {filename}')
@@ -55,7 +55,7 @@ def delete_image(filename):
         return False
     
     try:
-        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        filepath = os.path.join(current_blog.config['UPLOAD_FOLDER'], filename)
         if os.path.exists(filepath):
             os.remove(filepath)
             logger.info(f'Image deleted: {filename}')

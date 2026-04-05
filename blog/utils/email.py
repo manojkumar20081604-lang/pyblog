@@ -4,19 +4,19 @@ import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import current_app
-from app.models import EmailLog
-from app.extensions import db
+from blog.models import EmailLog
+from blog.extensions import db
 
 logger = logging.getLogger(__name__)
 
 
 def send_email(recipient, subject, body_html, body_text=None):
     try:
-        mail_server = current_app.config.get('MAIL_SERVER')
-        mail_port = current_app.config.get('MAIL_PORT')
-        mail_username = current_app.config.get('MAIL_USERNAME')
-        mail_password = current_app.config.get('MAIL_PASSWORD')
-        mail_use_tls = current_app.config.get('MAIL_USE_TLS', True)
+        mail_server = current_blog.config.get('MAIL_SERVER')
+        mail_port = current_blog.config.get('MAIL_PORT')
+        mail_username = current_blog.config.get('MAIL_USERNAME')
+        mail_password = current_blog.config.get('MAIL_PASSWORD')
+        mail_use_tls = current_blog.config.get('MAIL_USE_TLS', True)
         
         if not all([mail_server, mail_port, mail_username, mail_password]):
             logger.warning('Email configuration incomplete')
@@ -24,7 +24,7 @@ def send_email(recipient, subject, body_html, body_text=None):
             return False
         
         msg = MIMEMultipart('alternative')
-        msg['From'] = current_app.config.get('MAIL_DEFAULT_SENDER') or mail_username
+        msg['From'] = current_blog.config.get('MAIL_DEFAULT_SENDER') or mail_username
         msg['To'] = recipient
         msg['Subject'] = subject
         

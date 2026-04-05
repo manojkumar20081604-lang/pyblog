@@ -3,7 +3,7 @@ import os
 from functools import wraps
 from flask import abort, redirect, url_for, flash
 from flask_login import current_user
-from app.models import UserRole
+from blog.models import UserRole
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ def owner_or_admin_required(get_owner_id):
 
 
 def rate_limit(limit_string):
-    from app.extensions import limiter
+    from blog.extensions import limiter
     return limiter.limit(limit_string)
 
 

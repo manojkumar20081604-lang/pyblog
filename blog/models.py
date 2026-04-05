@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
-from app.extensions import db
+from blog.extensions import db
 
 
 class UserRole(Enum):

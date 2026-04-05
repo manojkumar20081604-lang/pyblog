@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, send_from_directory
 from flask_login import login_required, current_user
 from sqlalchemy import or_, func
-from app.extensions import db, cache
-from app.models import Post, Comment, Like, Tag, User, Notification
-from app.utils.forms import PostForm, CommentForm, ContactForm
-from app.utils.images import save_image, delete_image
-from app.utils.forms import sanitize_html, generate_slug
-from app.utils.decorators import admin_required, rate_limit, log_action
+from blog.extensions import db, cache
+from blog.models import Post, Comment, Like, Tag, User, Notification
+from blog.utils.forms import PostForm, CommentForm, ContactForm
+from blog.utils.images import save_image, delete_image
+from blog.utils.forms import sanitize_html, generate_slug
+from blog.utils.decorators import admin_required, rate_limit, log_action
 
 main = Blueprint('main', __name__)
 

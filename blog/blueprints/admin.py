@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required
-from app.extensions import db
-from app.models import User, Post, Comment, Notification, EmailLog
-from app.utils.forms import AdminUserForm
-from app.utils.decorators import admin_required, rate_limit
+from blog.extensions import db
+from blog.models import User, Post, Comment, Notification, EmailLog
+from blog.utils.forms import AdminUserForm
+from blog.utils.decorators import admin_required, rate_limit
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 

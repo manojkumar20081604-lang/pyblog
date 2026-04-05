@@ -3,14 +3,14 @@ import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask, request, jsonify
 from flask_login import current_user
-from app.config import config
+from blog.config import config
 
-db = __import__('app.extensions', fromlist=['db']).db
-login_manager = __import__('app.extensions', fromlist=['login_manager']).login_manager
-migrate = __import__('app.extensions', fromlist=['migrate']).migrate
-csrf = __import__('app.extensions', fromlist=['csrf']).csrf
-cache = __import__('app.extensions', fromlist=['cache']).cache
-limiter = __import__('app.extensions', fromlist=['limiter']).limiter
+db = __import__('blog.extensions', fromlist=['db']).db
+login_manager = __import__('blog.extensions', fromlist=['login_manager']).login_manager
+migrate = __import__('blog.extensions', fromlist=['migrate']).migrate
+csrf = __import__('blog.extensions', fromlist=['csrf']).csrf
+cache = __import__('blog.extensions', fromlist=['cache']).cache
+limiter = __import__('blog.extensions', fromlist=['limiter']).limiter
 
 
 def create_app(config_name=None):
@@ -43,12 +43,12 @@ def init_extensions(app):
     
     @login_manager.user_loader
     def load_user(user_id):
-        from app.models import User
+        from blog.models import User
         return User.query.get(int(user_id))
 
 
 def init_blueprints(app):
-    from app.blueprints import auth, main, admin
+    from blog.blueprints import auth, main, admin
     
     app.register_blueprint(auth)
     app.register_blueprint(main)
@@ -104,7 +104,7 @@ def init_context_processors(app):
     
     @app.context_processor
     def inject_cache():
-        from app.extensions import cache
+        from blog.extensions import cache
         return dict(cache=cache)
 
 
