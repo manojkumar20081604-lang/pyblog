@@ -68,10 +68,6 @@ class User(SoftDeleteMixin, db.Model):
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
     
-    __mapper_args__ = {
-        'order_by': created_at.desc()
-    }
-    
     @property
     def is_admin(self):
         return self.role == UserRole.ADMIN.value
