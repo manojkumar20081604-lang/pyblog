@@ -29,6 +29,7 @@ def create_app(config_name=None):
     
     with app.app_context():
         ensure_upload_folder(app)
+        db.create_all()
     
     return app
 
